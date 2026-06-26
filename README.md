@@ -37,7 +37,7 @@ Built with **Spring Boot**, **LangChain4j**, **Apache Tika**, **OpenAI**, and **
 
 ## Prerequisites
 
-- Java 21+
+- Java 17+
 - Maven 3.9+
 - OpenAI API Key **OR**
 - Ollama installed locally
@@ -47,7 +47,7 @@ Built with **Spring Boot**, **LangChain4j**, **Apache Tika**, **OpenAI**, and **
 ## 1. Clone the Repository
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/momaleAkash/document-analysis-LangChain4j.git
 cd document-intelligence-service
 ```
 
