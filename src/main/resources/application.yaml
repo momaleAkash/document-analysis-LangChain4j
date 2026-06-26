@@ -1,0 +1,72 @@
+spring:
+  application:
+    name: document-intelligence-service
+  datasource:
+    url: jdbc:h2:mem:docintel;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 100MB
+
+# LangChain4j Configuration
+langchain4j:
+  # open-ai:
+  #   chat-model:
+  #     api-key: ${OPENAI_API_KEY}
+  #     model-name: gpt-4o-mini
+  #     temperature: 0.3
+  #     timeout: 60s
+  # ollama:
+  #   chat-model:
+  #     base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+  #     model-name: llama3.2
+  #     temperature: 0.3
+  #     timeout: 120s
+
+  ollama:
+    chat-model:
+      base-url: http://localhost:11434
+      model-name: llama3.2
+      temperature: 0.3
+      timeout: 120s
+
+
+# Feature flags for LLM provider
+docintel:
+  llm:
+    #provider: ${LLM_PROVIDER}  # openai | ollama
+    provider: ollama
+  tika:
+    max-text-length: 50000
+
+server:
+  port: 8082
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.docintel: DEBUG
+    dev.langchain4j: INFO
