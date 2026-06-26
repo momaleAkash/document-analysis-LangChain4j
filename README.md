@@ -96,7 +96,7 @@ mvn spring-boot:run
 Application starts at:
 
 ```
-http://localhost:8080
+http://localhost:8082
 ```
 
 ---
@@ -112,7 +112,7 @@ POST /api/v1/documents/upload
 Example:
 
 ```bash
-curl -X POST http://localhost:8080/api/v1/documents/upload \
+curl -X POST http://localhost:8082/api/v1/documents/upload \
   -F "file=@sample-contract.pdf"
 ```
 
@@ -141,7 +141,7 @@ POST /api/v1/documents/{id}/ask
 Example:
 
 ```bash
-curl -X POST http://localhost:8080/api/v1/documents/{id}/ask \
+curl -X POST http://localhost:8082/api/v1/documents/{id}/ask \
   -H "Content-Type: application/json" \
   -d '{"question":"What is the termination clause?"}'
 ```
@@ -162,7 +162,7 @@ curl -X POST http://localhost:8080/api/v1/documents/{id}/ask \
 ## Get Document Details
 
 ```bash
-curl http://localhost:8080/api/v1/documents/{id}
+curl http://localhost:8082/api/v1/documents/{id}
 ```
 
 ---
@@ -170,7 +170,7 @@ curl http://localhost:8080/api/v1/documents/{id}
 ## Get Document Summary
 
 ```bash
-curl http://localhost:8080/api/v1/documents/{id}/summary
+curl http://localhost:8082/api/v1/documents/{id}/summary
 ```
 
 ---
