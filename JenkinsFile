@@ -1,40 +1,120 @@
-pipeline{
+pipeline {
+
     agent any
 
-    tools{
-        maven 'Maven3'
+    tools {
         jdk 'JDK21'
+        maven 'Maven3'
     }
 
-    stages{
+    environment {
+        IMAGE_NAME = "akashmomale45/smart-doc"
+        IMAGE_TAG = "${BUILD_NUMBER}"
+    }
 
-        stage('Checkout'){
-            steps{
-                echo 'Checking out source code...'
+    options {
+        timestamps()
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
                 checkout scm
             }
         }
 
-        stage('Build'){
-            steps{
-                sh 'mvn clean package'
+        stage('Verify Tools') {
+            steps {
+                sh 'java -version'
+                sh 'mvn -version'
+                sh 'docker --version'
             }
         }
 
-        stage('Test'){
-            steps{
+        stage('Clean') {
+            steps {
+                sh 'mvn clean'
+            }
+        }
+
+        stage('Compile') {
+            steps {
+                sh 'mvn compile'
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
                 sh 'mvn test'
             }
         }
+
+        stage('Package') {
+            steps {
+                sh 'mvn package -DskipTests'
+            }
+        }
+
+        stage('Archive JAR') {
+            steps {
+                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
+                sh 'docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest'
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(
+                        credentialsId: 'dockerhub',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS')]) {
+
+                    sh '''
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
+                    docker push $IMAGE_NAME:$IMAGE_TAG
+                    docker push $IMAGE_NAME:latest
+
+                    docker logout
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh '''
+                docker stop smart-doc || true
+                docker rm smart-doc || true
+
+                docker run -d \
+                  --name smart-doc \
+                  -p 8080:8080 \
+                  $IMAGE_NAME:latest
+                '''
+            }
+        }
     }
 
-    post{
-        success{
-            echo 'Build Successful!'
+    post {
+
+        success {
+            echo "Pipeline Completed Successfully"
         }
-        failure{
-            echo 'Build Failed!'
+
+        failure {
+            echo "Pipeline Failed"
+        }
+
+        always {
+            cleanWs()
         }
     }
-
 }
